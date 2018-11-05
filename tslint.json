@@ -15,6 +15,11 @@
     "ordered-imports": false,
     "object-literal-sort-keys": false,
     "no-consecutive-blank-lines": false,
-    "no-trailing-whitespace": false
+    "no-trailing-whitespace": false,
+    "space-before-function-paren": true,
+    "variable-name": [true, "ban-keywords", "check-format", "allow-leading-underscore", "allow-snake-case"],
+    "no-conditional-assignment": false,
+    "arrow-parens": false,
+    "no-console": false
   }
 }
