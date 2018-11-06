@@ -12,6 +12,7 @@
 <script lang="ts">
 import {Vue, Component, Prop} from 'vue-property-decorator';
 import ParticleService from '@/Services/ParticleService';
+import Argument from '@/Models/Argument';
 
 @Component
 export default class DeviceFunction extends Vue {
@@ -21,12 +22,13 @@ export default class DeviceFunction extends Vue {
   @Prop(Boolean) private hasFunctionDescription?: boolean;
   private func_arg: string = '';
   private function_description: string | undefined;
+  private arguments: Array<Argument<any> | null> = [];
   
   constructor () {
     super();
     
-    if (!this.deviceId) {
-      throw new Error(`Unspesified device id for function '${this.functionName}'!`);
+    if (!this.deviceId || !this.functionName) {
+      throw new Error(`[DeviceFunction] Unspesified property!`);
     }
     if (this.hasFunctionDescription) {
       this.GetFunctionDetails();
@@ -35,20 +37,25 @@ export default class DeviceFunction extends Vue {
   }
   
   private CallFunction (): void {
+    let arg: string;
+    
     if (!this.function_description) {
-      ParticleService.Instance.Particle.callFunction(
+      arg = this.func_arg || '';
+    } else {
+      arg = this.arguments.map(a => a ? a.value : a).join(':');
+    }
+    ParticleService.Instance.Particle.callFunction(
         {
           auth: ParticleService.Instance.Token,
           deviceId: this.deviceId,
           name: this.functionName,
-          argument: this.func_arg || '',
+          argument: arg,
         },
       )
       .then(res => console.log(res.body.return_value))
-      .finally(() => this.func_arg = '');
-    } else {
-      
-    }
+      .finally(() => {
+        this.func_arg = '';
+      });
   }
   
   private get FunctionName (): string {
@@ -68,6 +75,10 @@ export default class DeviceFunction extends Vue {
       name: `@${this.functionName}`,
     })).body.result as string;
     
+    this.function_description.split(':').forEach(part => {
+      this.arguments.push(Argument.Parse(part));
+    });
+    
   }
   
 }
@@ -79,14 +90,17 @@ export default class DeviceFunction extends Vue {
   display: grid;
   width: 500px;
   padding: 10px;
-  margin: 0 auto;
+  margin: 0 auto 20px;
   border: 2px solid #eee;
   border-radius: 5px;
   
+  align-items: center;
+  row-gap: 10px;
   grid-template-columns: 3fr 1fr;
 }
 
 h3 {
+  padding-left: 20px;
   text-align: left
 }
 

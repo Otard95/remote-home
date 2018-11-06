@@ -20,6 +20,11 @@ export default class ParticleService {
     this._token = token;
     this.isLoggedIn = token ? true : false;
     localStorage.setItem('particle-token', token);
+    if (this._events.onLogin) {
+      this._events.onLogin.forEach(e => {
+        e();
+      });
+    }
   }
   get Token (): string { return this._token || ''; }
 

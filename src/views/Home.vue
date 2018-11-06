@@ -33,6 +33,9 @@ export default class Home extends Vue {
     if (ParticleService.Instance.isLoggedIn) {
       this.GetDevices();
     }
+    ParticleService.Instance.addEventListner('onLogin', () => {
+      this.$forceUpdate();
+    });
   }
 
   private get IsReady (): boolean { return this.is_ready || this.ShowLogin; }
