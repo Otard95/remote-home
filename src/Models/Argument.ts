@@ -1,15 +1,15 @@
 export default class Argument<T> {
   
   // [choice1,choice2,choice3]:string:number:bool:NONE
-  public static Parse (value_to_parse: string): Argument<any> | null {
+  public static Parse (value_to_parse: string): Argument<any> {
     if (value_to_parse === 'NONE') {
-      return null;
+      return new Argument('null', '', 'Argument');
     }
     if (value_to_parse.startsWith('[')) {
       const choises: string[] = value_to_parse
                                 .substring(1, value_to_parse.length - 1)
                                 .split(',');
-      const placeholder = 'Choose an option.';
+      const placeholder = 'Choose an option';
       const value = choises[0];
       return new Argument<string> (String.name, value, placeholder, choises);
     }
@@ -34,8 +34,8 @@ export default class Argument<T> {
   constructor (
     tName: string,
     initial_value: T,
-    placeholder?: string | undefined,
-    choises?: T[] | undefined,
+    placeholder?: string,
+    choises?: T[],
   ) {
     this.type = tName;
     this.value = initial_value;

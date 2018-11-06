@@ -6,11 +6,11 @@
     </div>
     <div class="functions">
       <DeviceFunction
-        v-for="(func, i) in DeviceInfo().functions"
+        v-for="(funcname, i) in DeviceInfo.functions"
         :key="i"
         :deviceId="device.id"
-        :functionName="func"
-        :hasFunctionDescription="FuncHasDescription(func)"
+        :functionName="funcname"
+        :hasFunctionDescription="FuncHasDescription(funcname)"
       />
     </div>
   </div>
@@ -39,14 +39,14 @@ export default class Device extends Vue {
     this.GetInfo();
   }
 
-  private DeviceInfo (): PartilceDeviceInfo { return this.device_info || {} as PartilceDeviceInfo; }
+  private get DeviceInfo (): PartilceDeviceInfo { return this.device_info || {} as PartilceDeviceInfo; }
   
   private FuncHasDescription (name: string): boolean {
     
-    const vars = this.DeviceInfo().variables;
+    const vars = this.DeviceInfo.variables;
     if (!vars) { return false; }
     
-    return vars[name] !== undefined;
+    return vars[`@${name}`] !== undefined;
     
   }
 

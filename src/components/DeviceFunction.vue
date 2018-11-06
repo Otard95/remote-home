@@ -1,28 +1,34 @@
 <template>
   <div class="device-function">
     <h3>{{FunctionName}}</h3>
-    <button @click="CallFunction">Call</button>
+    <button @click="CallFunction" v-bind:class="{running : isExecuting}">Execute</button>
     <div class="args">
-      <input type="text" v-if="!hasFunctionDescription"
-             placeholder="Argunemts" v-model="func_arg" >
+      <FunctionArg v-for="(arg, i) in func_arguments"
+                   :key="i"
+                   :func_arg="arg" />
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import {Vue, Component, Prop} from 'vue-property-decorator';
+import FunctionArg from '@/components/FunctionArg.vue';
 import ParticleService from '@/Services/ParticleService';
 import Argument from '@/Models/Argument';
 
-@Component
+@Component({
+  components: {
+    FunctionArg,
+  },
+})
 export default class DeviceFunction extends Vue {
   
   @Prop(String) private deviceId?: string;
   @Prop(String) private functionName?: string;
   @Prop(Boolean) private hasFunctionDescription?: boolean;
-  private func_arg: string = '';
-  private function_description: string | undefined;
-  private arguments: Array<Argument<any> | null> = [];
+  private function_description?: string;
+  private func_arguments: Argument<any>[] = [];
+  private isExecuting: boolean = false;
   
   constructor () {
     super();
@@ -32,18 +38,18 @@ export default class DeviceFunction extends Vue {
     }
     if (this.hasFunctionDescription) {
       this.GetFunctionDetails();
+    } else {
+      this.func_arguments = [Argument.Parse('NONE')];
     }
     
   }
   
   private CallFunction (): void {
-    let arg: string;
     
-    if (!this.function_description) {
-      arg = this.func_arg || '';
-    } else {
-      arg = this.arguments.map(a => a ? a.value : a).join(':');
-    }
+    this.isExecuting = true;
+    const arg = this.func_arguments.map(a => a ? a.value : a).join(':');
+    console.log(arg);
+    
     ParticleService.Instance.Particle.callFunction(
         {
           auth: ParticleService.Instance.Token,
@@ -54,7 +60,7 @@ export default class DeviceFunction extends Vue {
       )
       .then(res => console.log(res.body.return_value))
       .finally(() => {
-        this.func_arg = '';
+        this.isExecuting = false;
       });
   }
   
@@ -76,7 +82,7 @@ export default class DeviceFunction extends Vue {
     })).body.result as string;
     
     this.function_description.split(':').forEach(part => {
-      this.arguments.push(Argument.Parse(part));
+      this.func_arguments.push(Argument.Parse(part));
     });
     
   }
@@ -108,19 +114,42 @@ button {
   height: 60%;
   border: none;
   border-radius: 5px;
-  background: lightcyan;
+  background: rgb(11, 153, 158);
+  font-size: 14px;
+  font-weight: 600;
 }
 
 .args {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
   border-top: 2px solid #eee;
   padding-top: 15px;
   grid-column: 1/3;
 }
 
-input[type="text"] {
-  padding: 5px;
-  border-radius: 3px;
-  border: 1px solid #aaa;
+.running {
+  background: radial-gradient(rgb(3, 155, 243), rgb(13, 223, 160));
+	background-size: 400% 400%;
+  animation: working 4s linear infinite;
+}
+
+@keyframes working {
+  0% {
+		background-position: 0% 0%
+	}
+	25% {
+		background-position: 100% 0%
+	}
+  50% {
+    background-position: 50% 50%
+  }
+  75% {
+    background-position: 0% 100%
+  }
+	100% {
+		background-position: 0% 0%
+	}
 }
 
 </style>
