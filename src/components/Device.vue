@@ -1,40 +1,64 @@
 <template>
   <div class="particle-device">
-    <h3>{{device.id}}</h3>
-    <p>{{JSON.stringify(DeviceInfo().variables)}}</p>
+    <h3>{{device.name || device.id}}</h3>
+    <div class="variables">
+      
+    </div>
+    <div class="functions">
+      <DeviceFunction
+        v-for="(func, i) in DeviceInfo().functions"
+        :key="i"
+        :deviceId="device.id"
+        :functionName="func"
+        :hasFunctionDescription="FuncHasDescription(func)"
+      />
+    </div>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
+import DeviceFunction from '@/components/DeviceFunction.vue';
 import ParticleService from '@/Services/ParticleService';
 import { PartilceDevice, PartilceDeviceInfo } from 'particle-api-js';
 
-@Component
+@Component({
+  components: {
+    DeviceFunction,
+  },
+})
 export default class Device extends Vue {
 
   @Prop()
   private device?: PartilceDevice;
-  private _device_info: PartilceDeviceInfo | null;
+  private device_info: PartilceDeviceInfo | null;
 
   constructor () {
     super();
-    this._device_info = null;
+    this.device_info = null;
     this.GetInfo();
   }
 
-  private DeviceInfo () { return this._device_info || {} }
+  private DeviceInfo (): PartilceDeviceInfo { return this.device_info || {} as PartilceDeviceInfo; }
+  
+  private FuncHasDescription (name: string): boolean {
+    
+    const vars = this.DeviceInfo().variables;
+    if (!vars) { return false; }
+    
+    return vars[name] !== undefined;
+    
+  }
 
-  private async GetInfo() {
+  private async GetInfo () {
 
     if (!this.device) { return; }
-
-    this._device_info = (await ParticleService.Instance.Particle.getDevice({
+    
+    this.device_info = (await ParticleService.Instance.Particle.getDevice({
       auth: ParticleService.Instance.Token,
       deviceId: this.device.id,
     })).body;
-    this.$forceUpdate();
-
+    
   }
 
 }
