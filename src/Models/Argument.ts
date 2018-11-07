@@ -6,17 +6,19 @@ export default class Argument<T> {
       return new Argument<string>('NONE', '');
     }
     
-    let match: RegExpMatchArray | null = value_to_parse.match(/\{([\w+ ]+)\}/g);
+    // extract placeholder if any
+    let match: RegExpMatchArray | null = value_to_parse.match(/\{([\w+ ]+)\}/);
     if (match) {
-      value_to_parse.replace(/\{([\w+ ]+)\}/, '');
+      value_to_parse = value_to_parse.replace(/\{[\w+ ]+\}/, '');
     } else {
       match = [];
     }
+    
     if (value_to_parse.startsWith('[')) {
       const choises: string[] = value_to_parse
                                 .substring(1, value_to_parse.length - 1)
                                 .split(',');
-      const placeholder = match[1] || 'Choose an option';
+      const placeholder = match[1] || '';
       const value = choises[0];
       return new Argument<string> (String.name, value, placeholder, choises);
     }

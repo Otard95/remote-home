@@ -2,7 +2,7 @@
   <div class="function-arg">
     
     <div v-if="IsSelect" class="no-warp input-field no-border">
-      <label v-if="IsSelect" for="select">{{func_arg.placeholder}} </label>
+      <label v-if="IsSelect" for="select">{{func_arg.placeholder}}</label>
       <select v-if="IsSelect" v-model="func_arg.value" id="select">
         <option v-for="(choice, i) in func_arg.choises"
                 :key="i"
@@ -15,7 +15,7 @@
            type="text" id="text">
 
     <div v-if="IsNumber" class="no-warp input-field no-border">
-      <label v-if="IsNumber" for="num">{{func_arg.placeholder}}:</label>
+      <label v-if="IsNumber" for="num">{{func_arg.placeholder}}</label>
       <input v-if="IsNumber" v-model="func_arg.value" type="number" id="num">
     </div>
 
@@ -79,6 +79,7 @@ select {
 label {
   display: block;
   white-space: nowrap;
+  margin-right: 5px;
 }
 
 input[type="number"] {

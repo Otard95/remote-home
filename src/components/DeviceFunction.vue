@@ -2,7 +2,7 @@
   <div class="device-function">
     <h3>{{FunctionName}}</h3>
     <button @click="CallFunction" v-bind:class="{running : isExecuting}">Execute</button>
-    <div class="args">
+    <div v-if="HasArguments" class="args">
       <FunctionArg v-for="(arg, i) in func_arguments"
                    :key="i"
                    :func_arg="arg" />
@@ -64,6 +64,10 @@ export default class DeviceFunction extends Vue {
       .finally(() => {
         this.isExecuting = false;
       });
+  }
+  
+  private get HasArguments (): boolean {
+    return this.func_arguments[0] ? this.func_arguments[0].value != 'NONE' : false;
   }
   
   private get FunctionName (): string {
