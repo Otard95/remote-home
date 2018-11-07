@@ -67,7 +67,7 @@ export default class DeviceFunction extends Vue {
   }
   
   private get HasArguments (): boolean {
-    return this.func_arguments[0] ? this.func_arguments[0].value != 'NONE' : false;
+    return this.func_arguments[0] ? this.func_arguments[0].value !== 'NONE' : false;
   }
   
   private get FunctionName (): string {
