@@ -2,11 +2,17 @@
   <div class="particle-device">
     <h3>{{device.name || device.id}}</h3>
     <div class="variables">
-      
+      <DeviceVariable 
+        v-for="(val, key, i) in Variables"
+        :key="i"
+        :deviceId="device.id"
+        :variableName="key"
+        :variableType="val"
+      />
     </div>
     <div class="functions">
       <DeviceFunction
-        v-for="(funcname, i) in DeviceInfo.functions"
+        v-for="(funcname, i) in Functions"
         :key="i"
         :deviceId="device.id"
         :functionName="funcname"
@@ -19,12 +25,16 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import DeviceFunction from '@/components/DeviceFunction.vue';
+import DeviceVariable from '@/components/DeviceVariable.vue';
 import ParticleService from '@/Services/ParticleService';
-import { PartilceDevice, PartilceDeviceInfo } from 'particle-api-js';
+import SimpleStore from '@/Services/SimpleStore';
+import IsReadyCollection from '@/Models/IsReadyCollection';
+import { PartilceDevice, PartilceDeviceInfo, PartilceVariable, ParticleVariableList } from 'particle-api-js';
 
 @Component({
   components: {
     DeviceFunction,
+    DeviceVariable,
   },
 })
 export default class Device extends Vue {
@@ -39,7 +49,25 @@ export default class Device extends Vue {
     this.GetInfo();
   }
 
-  private get DeviceInfo (): PartilceDeviceInfo { return this.device_info || {} as PartilceDeviceInfo; }
+  private get DeviceInfo (): PartilceDeviceInfo {
+    return this.device_info || {} as PartilceDeviceInfo;
+  }
+  
+  private get Functions (): string[] {
+    return this.DeviceInfo.functions || [];
+  }
+  
+  private get Variables (): ParticleVariableList {
+    const variables = this.DeviceInfo.variables;
+    if (!variables) { return {} as ParticleVariableList; }
+    const filtered = Object.keys(variables)
+    .filter(key => !key.startsWith('@'))
+    .reduce((obj: any, key: string) => {
+      obj[key] = variables[key];
+      return obj;
+    }, {});
+    return filtered;
+  }
   
   private FuncHasDescription (name: string): boolean {
     
@@ -58,6 +86,7 @@ export default class Device extends Vue {
       auth: ParticleService.Instance.Token,
       deviceId: this.device.id,
     })).body;
+    console.log(this.device_info);
     
   }
 

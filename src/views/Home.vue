@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <Login v-if="ShowLogin" />
-    <LoadingOverlay v-if="!IsReady" :showSpinner="!InitDone" />
+    <LoadingOverlay v-if="!IsReady" :showSpinner="true" />
     <Device v-for="deviceInfo in Devices" :device="deviceInfo" :key="deviceInfo.id" />
   </div>
 </template>
@@ -12,6 +12,8 @@ import Login from '@/components/Login.vue';
 import LoadingOverlay from '@/components/LoadingOverlay.vue';
 import Device from '@/components/Device.vue';
 import ParticleService from '@/Services/ParticleService';
+import SimpleStore from '@/Services/SimpleStore';
+import IsReadyCollection from '@/Models/IsReadyCollection';
 import { PartilceDevice } from 'particle-api-js';
 
 @Component({
@@ -33,13 +35,15 @@ export default class Home extends Vue {
     if (ParticleService.Instance.isLoggedIn) {
       this.GetDevices();
     }
-    ParticleService.Instance.addEventListner('onLogin', () => {
+    ParticleService.Instance.addEventListener('onLogin', () => {
       this.$forceUpdate();
     });
+    
+    const self = this;
+    
   }
 
   private get IsReady (): boolean { return this.is_ready || this.ShowLogin; }
-  private get InitDone (): boolean { return this.init_done; }
   private get ShowLogin (): boolean { return !ParticleService.Instance.isLoggedIn; }
 
   private get Devices (): PartilceDevice[] { return this.devices; }

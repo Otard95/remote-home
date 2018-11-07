@@ -2,7 +2,7 @@
   <div class="function-arg">
     
     <div v-if="IsSelect" class="no-warp input-field no-border">
-      <label v-if="IsSelect" for="select">{{func_arg.placeholder}}:</label>
+      <label v-if="IsSelect" for="select">{{func_arg.placeholder}} </label>
       <select v-if="IsSelect" v-model="func_arg.value" id="select">
         <option v-for="(choice, i) in func_arg.choises"
                 :key="i"
@@ -10,7 +10,7 @@
       </select>
     </div>
 
-    <input v-if="IsString || IsAny" v-model="func_arg.value"
+    <input v-if="IsString" v-model="func_arg.value"
            :placeholder="func_arg.placeholder||'Argument'"
            type="text" id="text">
 
@@ -54,9 +54,6 @@ export default class FunctionArg extends Vue {
   }
   private get IsBool (): boolean {
     return this.func_arg ? this.func_arg.type === Boolean.name : false;
-  }
-  private get IsAny (): boolean {
-    return this.func_arg ? this.func_arg.type === 'null' : false;
   }
 
 }

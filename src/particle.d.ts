@@ -34,9 +34,7 @@ declare module 'particle-api-js' {
   interface PartilceDeviceInfo {
     id: string;
     name?: string;
-    variables?: {
-      [key: string]: string,
-    };
+    variables?: ParticleVariableList;
     functions?: string[];
     connected: boolean;
     platform_id: number;
@@ -47,6 +45,10 @@ declare module 'particle-api-js' {
     last_ip_address: string;
     last_heard: string;
     notes?: any;
+  }
+  
+  interface ParticleVariableList {
+    [key: string]: string;
   }
 
   interface PartilceVariable {

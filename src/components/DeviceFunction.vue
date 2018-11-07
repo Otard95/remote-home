@@ -14,6 +14,8 @@
 import {Vue, Component, Prop} from 'vue-property-decorator';
 import FunctionArg from '@/components/FunctionArg.vue';
 import ParticleService from '@/Services/ParticleService';
+import SimpleStore from '@/Services/SimpleStore';
+import IsReadyCollection from '@/Models/IsReadyCollection';
 import Argument from '@/Models/Argument';
 
 @Component({
@@ -27,7 +29,7 @@ export default class DeviceFunction extends Vue {
   @Prop(String) private functionName?: string;
   @Prop(Boolean) private hasFunctionDescription?: boolean;
   private function_description?: string;
-  private func_arguments: Argument<any>[] = [];
+  private func_arguments: Array<Argument<any>> = [];
   private isExecuting: boolean = false;
   
   constructor () {
@@ -39,7 +41,7 @@ export default class DeviceFunction extends Vue {
     if (this.hasFunctionDescription) {
       this.GetFunctionDetails();
     } else {
-      this.func_arguments = [Argument.Parse('NONE')];
+      this.func_arguments = [new Argument<string> (String.name, '', 'Argument')];
     }
     
   }
@@ -111,6 +113,7 @@ h3 {
 }
 
 button {
+  width: 125px;
   height: 60%;
   border: none;
   border-radius: 5px;
